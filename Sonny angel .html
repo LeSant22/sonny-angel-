@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sonny Angels - Colección Encantadora</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff7f8;
+      color: #555;
+      margin: 0;
+      padding: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      background-color: #fddde6;
+      color: #8a4f7d;
+      text-align: center;
+      padding: 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      background-color: #fef0f5;
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 1rem;
+    }
+
+    .card h2 {
+      color: #d97ea6;
+      font-size: 1.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card p {
+      font-size: 0.95rem;
+    }
+
+    .card a {
+      display: inline-block;
+      margin-top: 1rem;
+      text-decoration: none;
+      background-color: #ffdbe9;
+      color: #8a4f7d;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      transition: background 0.3s, transform 0.2s ease;
+    }
+
+    .card a:hover {
+      background-color: #ffc6dc;
+      transform: scale(1.05) rotate(-1deg);
+    }
+
+    footer {
+      background-color: #fddde6;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #8a4f7d;
+      position: relative;
+      z-index: 2;
+    }
+
+    canvas#burbujas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sonny Angels - Descubre Tu Angelito Favorito</h1>
+    <p>Una colección adorable en tonos pastel</p>
+  </header>
+
+  <main class="container" id="modelos-container">
+    <!-- Tarjetas generadas con JS -->
+  </main>
+
+  <footer>
+    © 2025 Sonny Angel Fans. No oficial. Visita la tienda oficial para más.
+  </footer>
+
+  <canvas id="burbujas"></canvas>
+
+  <script>
+    const modelos = [
+      {
+        nombre: "Sonny Angel Frutas",
+        descripcion: "Una dulce colección inspirada en frutas como la fresa, piña y uva.",
+        imagen: "https://i.imgur.com/tKBaWrC.png",
+        enlace: "https://www.sonnyangel.com/en/lineup/mini-figure/fruit-series/"
+      },
+      {
+        nombre: "Sonny Angel Animales",
+        descripcion: "Una línea tierna con disfraces de animalitos como conejos y ositos.",
+        imagen: "https://i.imgur.com/tKBaWrC.png",
+        enlace: "https://www.sonnyangel.com/en/lineup/mini-figure/animal-series/"
+      },
+      {
+        nombre: "Sonny Angel Edición Limitada",
+        descripcion: "Figuras únicas y especiales lanzadas por temporada o eventos.",
+        imagen: "https://i.imgur.com/xRY8ppR.png",
+        enlace: "https://www.sonnyangel.com/en/lineup/mini-figure/limited-series/"
+      }
+    ];
+
+    const contenedor = document.getElementById('modelos-container');
+
+    modelos.forEach((modelo, i) => {
+      const tarjeta = document.createElement('div');
+      tarjeta.className = 'card';
+
+      tarjeta.innerHTML = `
+        <img src="${modelo.imagen}" alt="${modelo.nombre}" />
+        <h2>${modelo.nombre}</h2>
+        <p>${modelo.descripcion}</p>
+        <a href="${modelo.enlace}" target="_blank">Ver en tienda oficial</a>
+      `;
+
+      contenedor.appendChild(tarjeta);
+
+      setTimeout(() => {
+        tarjeta.classList.add('visible');
+      }, i * 200);
+    });
+
+    // Burbujas pastel flotando en el fondo
+    const canvas = document.getElementById('burbujas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let burbujas = Array.from({ length: 30 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      radius: Math.random() * 8 + 4,
+      speed: Math.random() * 0.5 + 0.2,
+      color: `rgba(255, ${180 + Math.random() * 50}, ${200 + Math.random() * 50}, 0.3)`
+    }));
+
+    function animarBurbujas() {
+      ctx.clearRect(0, 0, width, height);
+      for (let b of burbujas) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, 2 * Math.PI);
+        ctx.fillStyle = b.color;
+        ctx.fill();
+        b.y -= b.speed;
+        if (b.y + b.radius < 0) {
+          b.y = height + b.radius;
+          b.x = Math.random() * width;
+        }
+      }
+      requestAnimationFrame(animarBurbujas);
+    }
+
+    animarBurbujas();
+  </script>
+</body>
+</html>
